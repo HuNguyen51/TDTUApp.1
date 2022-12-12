@@ -1,6 +1,7 @@
 package com.example.tdtuapp.Home.ChatPreview;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -28,8 +29,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatPreviewAdapter extends RecyclerView.Adapter<ChatPreviewAdapter.ViewHolder> {
     private Context context;
+    private Activity activity;
     private List<ChatPreview> chatPreviewLists = new ArrayList<>();
-
     public ChatPreviewAdapter(Context context) {
         this.context = context;
     }

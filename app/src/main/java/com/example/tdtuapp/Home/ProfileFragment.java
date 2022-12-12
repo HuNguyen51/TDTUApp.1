@@ -53,7 +53,7 @@ public class ProfileFragment extends Fragment {
                 LocalMemory.saveLocalUser(context, "");
                 // di chuyển đến màn hình đăng nhập
                 context.startActivity(new Intent(context, LoginSignUpActivity.class));
-                getActivity().finish();
+                getActivity().finishAffinity();
             }
         });
         return view;

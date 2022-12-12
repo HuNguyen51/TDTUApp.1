@@ -42,18 +42,19 @@ public class MainActivity extends AppCompatActivity {
         actionbar.hide();
     }
 
-    @Override
-    protected void onDestroy() {
-        databaseReference.child("USERS").child(localUser).child("isOnline").setValue(false);
-        Log.d("life", "destroy main");
-        super.onDestroy();
-    }
+
     @Override
     protected void onResume() {
         super.onResume();
         localUser = LocalMemory.loadLocalUser(this);
         databaseReference.child("USERS").child(localUser).child("isOnline").setValue(true);
         Log.d("life", "resume main");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("life", "pause main");
     }
 
     @Override
@@ -64,8 +65,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d("life", "pause main");
+    protected void onDestroy() {
+        databaseReference.child("USERS").child(localUser).child("isOnline").setValue(false);
+        Log.d("life", "destroy main");
+        super.onDestroy();
     }
 }

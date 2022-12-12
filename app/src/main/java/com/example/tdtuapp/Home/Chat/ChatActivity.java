@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -46,7 +48,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements View.OnClickListener{
     TextView tvUsernameInChat, tvStatus;
     ImageView btnBack, imProfileInChat, btnSend;
     EditText edtTypeText;
@@ -185,14 +187,8 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isBackClicked = true;
-                startActivity(new Intent(ChatActivity.this, MainActivity.class));
-                finish();
-            }
-        });
+        btnBack.setOnClickListener(this);
+
     }
 
     @Override
@@ -289,5 +285,26 @@ public class ChatActivity extends AppCompatActivity {
         edtTypeText = findViewById(R.id.edtTypeText);
 
         rvChatContent = findViewById(R.id.rvChatContent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d("undo", "clicked");
+        isBackClicked = true;
+        //startActivity(new Intent(ChatActivity.this, MainActivity.class));
+        finish();
+        super.onBackPressed();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btnBack:
+                Log.d("btnback", "clicked");
+                isBackClicked = true;
+                //startActivity(new Intent(ChatActivity.this, MainActivity.class));
+                finish();
+                break;
+        }
     }
 }
