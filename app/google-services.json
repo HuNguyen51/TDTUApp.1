@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "403623297239",
+    "project_id": "tdtu-app-ab935",
+    "storage_bucket": "tdtu-app-ab935.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:403623297239:android:e368307e19d87ac56df092",
+        "android_client_info": {
+          "package_name": "com.example.tdtuapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "403623297239-uskpsseuj76b66d7csj1g757g4urtplp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3zbQP-NMZ6VP3dslXH0Lvy1kDpbVa8LE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "403623297239-uskpsseuj76b66d7csj1g757g4urtplp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

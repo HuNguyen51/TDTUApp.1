@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="11dp"
+        android:layout_marginTop="4dp">
+        <LinearLayout
+            android:id="@+id/oppoChatLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="50dp"
+            android:layout_marginStart="20dp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tvOppoMessage"
+                android:paddingVertical="10dp"
+                android:textColor="@color/black"
+                android:paddingHorizontal="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đây là tin nhắn của đối phương"
+                android:background="@drawable/opo_msg_back"/>
+
+            <TextView
+                android:id="@+id/tvOppoTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="20/11/2022 - 12:24 PM"
+                android:textSize="10sp"
+                android:layout_marginTop="5dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/myChatLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="20dp"
+            android:layout_alignParentEnd="true"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tvMyMessage"
+                android:paddingVertical="10dp"
+                android:paddingHorizontal="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:textColor="@color/white"
+                android:text="hi"
+                android:background="@drawable/my_msg_back"/>
+
+            <TextView
+                android:id="@+id/tvMyTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="20/11/2022 - 12:24 PM"
+                android:textSize="10sp"
+                android:layout_gravity="end"
+                android:layout_marginTop="5dp"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Home.Chat.ChatActivity">
+
+    <RelativeLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FBFBFB"
+        >
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="2dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/ic_baseline_arrow_back_24"/>
+
+        <ImageView
+            android:id="@+id/imProfileInChat"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_toEndOf="@+id/btnBack"
+            android:src="@drawable/user"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:orientation="vertical"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@+id/imProfileInChat">
+            <TextView
+                android:id="@+id/tvUsernameInChat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Username"
+                android:maxLines="1"
+                android:textSize="18sp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Online"
+                android:maxLines="1"
+                android:textSize="13sp"
+                android:textColor="@color/teal_200"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/topBar"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvChatContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/topBar"
+        android:layout_above="@+id/bottomBar"/>
+
+    <RelativeLayout
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#FBFBFB"
+        android:paddingVertical="10dp">
+        <EditText
+            android:id="@+id/edtTypeText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:backgroundTint="@android:color/transparent"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
+            android:maxLines="4"
+            android:inputType="textMultiLine"
+            android:layout_toStartOf="@+id/btnSend"
+            android:hint="Soạn tin nhắn ..."/>
+
+        <ImageView
+            android:id="@+id/btnSend"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_baseline_send_24" />
+    </RelativeLayout>
+
+</RelativeLayout>
