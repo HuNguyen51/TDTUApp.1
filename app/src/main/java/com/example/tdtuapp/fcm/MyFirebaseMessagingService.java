@@ -58,6 +58,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         intent.putExtra("name", sender);
         intent.putExtra("avatar", avatar);
         intent.putExtra("chatKey", chatKey);
+        intent.putExtra("from", "notification");
         PendingIntent pendingIntent = PendingIntent.getActivity( this , 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
         Uri notificationSoundURI = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);

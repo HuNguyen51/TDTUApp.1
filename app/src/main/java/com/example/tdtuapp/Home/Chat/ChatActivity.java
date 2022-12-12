@@ -68,6 +68,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     boolean loadingFirstTime = true;
     Boolean isBackClicked = false;
+    String from = "main";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +120,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
 
+        if (getIntent().hasExtra("from")){
+            from = getIntent().getStringExtra("from");
+        }
 
         // đặt tên user khác
         tvUsernameInChat.setText(otherUser);
@@ -291,7 +295,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public void onBackPressed() {
         Log.d("undo", "clicked");
         isBackClicked = true;
-        //startActivity(new Intent(ChatActivity.this, MainActivity.class));
+        if (from.equals("notification")){
+            startActivity(new Intent(ChatActivity.this, MainActivity.class));
+        }
         finish();
         super.onBackPressed();
     }
@@ -302,7 +308,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnBack:
                 Log.d("btnback", "clicked");
                 isBackClicked = true;
-                //startActivity(new Intent(ChatActivity.this, MainActivity.class));
+                if (from.equals("notification")){
+                    startActivity(new Intent(ChatActivity.this, MainActivity.class));
+                }
                 finish();
                 break;
         }
