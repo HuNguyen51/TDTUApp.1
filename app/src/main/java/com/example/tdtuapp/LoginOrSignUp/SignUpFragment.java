@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,13 +21,21 @@ import com.example.tdtuapp.LocalMemory.ConstantData;
 import com.example.tdtuapp.LocalMemory.LocalMemory;
 import com.example.tdtuapp.LoginSignUpActivity;
 import com.example.tdtuapp.MainActivity;
+import com.example.tdtuapp.firestore.firestoreAPI;
 import com.example.tdtuapp.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class SignUpFragment extends Fragment {
@@ -72,33 +81,43 @@ public class SignUpFragment extends Fragment {
                 else if (password_confirm.isEmpty()) showToast("Vui lòng xác nhận mật khẩu");
                 else if (!password_confirm.equals(password)) showToast("Xác nhận mật khẩu không đúng");
                 else {
-                    // TODO
-                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            // validate
-                            if (snapshot.child("USERS").hasChild(username)) showToast("Tên đăng nhập đã tồn tại");
-                            else { // Kiểm tra hợp lệ xong hết thì đăng ký
-                                // Tiến hành đăng ký
-                                databaseReference.child("USERS").child(username).child("password").setValue(password);
-                                databaseReference.child("USERS").child(username).child("email").setValue(email);
-                                databaseReference.child("USERS").child(username).child("avatar").setValue("");
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    db.collection("Users")
+                            .whereEqualTo("username", username)
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d("check user exists", "Lấy dữ liệu thành công");
+                                        if (!task.getResult().isEmpty()){ // không có user
+                                            showToast("Tên đăng nhập đã tồn tại");
+                                        } else { // pass tất cả validate
+                                            // TODO
+                                            Map<String, Object> user = new HashMap<>();
+                                            user.put("username", username);
+                                            user.put("name", username);
+                                            user.put("password", password);
+                                            user.put("email", email);
+                                            user.put("avatar", "");
+                                            user.put("role", "student");
+                                            user.put("token", "");
 
-                                LocalMemory.saveLocalUser(context, username);
-                                showToast("Đăng ký thành công");
-                                context.startActivity(new Intent(context, MainActivity.class));
-                                getActivity().finish();
-                            }
-                        }
+                                            firestoreAPI.register(user); // firestore
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
+                                            showToast("Đăng ký thành công");
 
-                        }
-                    });
+                                            LocalMemory.saveLocalUser(context, username);
+                                            LocalMemory.saveLocalName(context, username);
+                                            context.startActivity(new Intent(context, MainActivity.class));
+                                            getActivity().finish();
+                                        }
+                                    } else {
+                                        Log.d("check user exists", "Error getting documents: ", task.getException());
+                                    }
+                                }
+                            });
                 }
-
-
             }
         });
         return view;

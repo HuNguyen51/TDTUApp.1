@@ -29,11 +29,16 @@ import com.example.tdtuapp.LocalMemory.ConstantData;
 import com.example.tdtuapp.LocalMemory.LocalMemory;
 import com.example.tdtuapp.MainActivity;
 import com.example.tdtuapp.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -60,8 +65,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     Boolean isOnline;
     String otherUser;
     String avatar;
+    String localName;
+    String otherUserName;
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl(ConstantData.realTimeDatabaseUrl);
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     List<Chat> chatList = new ArrayList<>();
     ChatAdapter chatAdapter;
@@ -81,38 +89,41 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         init();
         // local user
         localUser = LocalMemory.loadLocalUser(this);
+        localName = LocalMemory.loadLocalName(this);
         // lấy dữ liệu sau khi nhấp vào cuộc trò chuyện từ ChatPreview
-        otherUser = getIntent().getStringExtra("name");
-        Log.d("check user222", localUser + " and " + otherUser + "-");
-
+        otherUser = getIntent().getStringExtra("username");
+        otherUserName = getIntent().getStringExtra("name");
         avatar = getIntent().getStringExtra("avatar");
-        // kiểm tra online
-        databaseReference.child("USERS").child(otherUser).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Boolean isOnline = snapshot.child("isOnline").getValue(Boolean.class);
-                if (isOnline){
-                    tvStatus.setText("online");
-                    tvStatus.setTextColor(Color.parseColor("#FF03DAC5"));
-                } else {
-                    tvStatus.setText("offline");
-                    tvStatus.setTextColor(Color.parseColor("#cccccc"));
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
         chatKey = getIntent().getStringExtra("chatKey");
-            // nếu chưa có cuộc trò chuyện thì tạo key cho cuộc trò chuyện đó
+        // nếu chưa có cuộc trò chuyện thì tạo key cho cuộc trò chuyện đó
         if (chatKey.isEmpty()) {
             chatKey = databaseReference.child("CHAT").push().getKey();
         }
         Log.d("chat key", chatKey);
 
+        // kiểm tra online
+//        databaseReference.child("USERS").child(otherUser).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                Boolean isOnline = snapshot.child("isOnline").getValue(Boolean.class);
+//                if (isOnline){
+//                    tvStatus.setText("online");
+//                    tvStatus.setTextColor(Color.parseColor("#FF03DAC5"));
+//                } else {
+//                    tvStatus.setText("offline");
+//                    tvStatus.setTextColor(Color.parseColor("#cccccc"));
+//                }
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+
+
+
         // Lưu thời gian khi bấm vào cuộc trò chuyện (tức là thời gian khi xem tin nhắn)
+
         LocalMemory.saveLastMessageTime(this, chatKey);
 
         // khi mở app tương ứng với việc mở xem thông tin trong app
@@ -125,7 +136,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         // đặt tên user khác
-        tvUsernameInChat.setText(otherUser);
+        tvUsernameInChat.setText(otherUserName);
         // load ảnh của user khác
         if (!avatar.isEmpty()){
             Picasso.get().load(avatar).into(imProfileInChat);
@@ -199,7 +210,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         localUser = LocalMemory.loadLocalUser(this);
-        databaseReference.child("USERS").child(localUser).child("isOnline").setValue(true);
+//        databaseReference.child("USERS").child(localUser).child("isOnline").setValue(true);
         Log.d("life", "resume chat");
     }
 
@@ -212,9 +223,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onDestroy() {
-        if (!isBackClicked){
-            databaseReference.child("USERS").child(localUser).child("isOnline").setValue(false);
-        }
+//        if (!isBackClicked){
+//            databaseReference.child("USERS").child(localUser).child("isOnline").setValue(false);
+//        }
         Log.d("life", "destroy chat");
         super.onDestroy();
     }
@@ -224,35 +235,41 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         Log.d("life", "stop chat");
     }
     public void getToken(String message){
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("USERS").child(otherUser);
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String token = snapshot.child("token").getValue(String.class);
+        db.collection("Users")
+                .whereEqualTo("username", otherUser)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Log.d("load token", document.getId() + " => " + document.getData());
+                            // gửi thông báo
+                            String token = document.get("token", String.class);
 
-                JSONObject to = new JSONObject();
-                JSONObject data = new JSONObject();
-                try {
-                    data.put("sender", localUser);
-                    data.put("message", message);
-                    //data.put("receiver", otherUser);
-                    data.put("avatar", avatar);
-                    data.put("chatKey", chatKey);
 
-                    to.put("to", token);
-                    to.put("data", data);
 
-                    sendNotificatiton(to);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
+                            JSONObject to = new JSONObject();
+                            JSONObject data = new JSONObject();
+                            try {
+                                data.put("sender", localName); // sender trong thông báo
+                                data.put("message", message);
+                                //data.put("receiver", otherUser);
+                                data.put("avatar", avatar);
+                                data.put("chatKey", chatKey);
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                                to.put("to", token);
+                                to.put("data", data);
 
-            }
-        });
+                                sendNotificatiton(to);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                        }
+
+                    }
+                });
+
     }
 
     private void sendNotificatiton(JSONObject to) {

@@ -16,16 +16,25 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.tdtuapp.firestore.firestoreAPI;
 import com.example.tdtuapp.LocalMemory.ConstantData;
 import com.example.tdtuapp.LocalMemory.LocalMemory;
 import com.example.tdtuapp.LoginSignUpActivity;
 import com.example.tdtuapp.MainActivity;
 import com.example.tdtuapp.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginFragment extends Fragment {
     EditText etEmailLogin, etPasswordLogin;
@@ -56,35 +65,39 @@ public class LoginFragment extends Fragment {
                 String username = etEmailLogin.getText().toString();
                 String password = etPasswordLogin.getText().toString();
 
-                databaseReference.child("USERS").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        // validate
-                        if (username.isEmpty()) showToast("Vui lòng nhập tài khoản");
-                        else if (!snapshot.hasChild(username)) showToast("Tên đăng nhập không tồn tại");
-                        else if (password.isEmpty()) showToast("Vui lòng nhập mật khẩu");
-                        else if (password.length() < 8) showToast("Mật khẩu quá ngắn");
-                        else {
-                            String actualPass = snapshot.child(username).child("password").getValue(String.class);
-                            if (!actualPass.equals(password)) showToast("Sai mật khẩu");
-                            else {
-                                // TODO
-                                if (!snapshot.child(username).child("token").getValue(String.class).isEmpty()){ //đăng nhập ở thiết bị khác
-                                    showToast("Tài khoản đang được đăng nhập ở thiết bị khác");
-                                } else {
-                                    LocalMemory.saveLocalUser(context, username);
-                                    context.startActivity(new Intent(context, MainActivity.class));
-                                    getActivity().finish();
+                if (username.isEmpty()) showToast("Vui lòng nhập tài khoản");
+                else if (password.isEmpty()) showToast("Vui lòng nhập mật khẩu");
+                else if (password.length() < 8) showToast("Mật khẩu quá ngắn");
+                else {
+                    // TODO
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    db.collection("Users")
+                            .whereEqualTo("username", username)
+                            .whereEqualTo("password", password)
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        if (task.getResult().isEmpty()){ // không có user
+                                            showToast("Tên đăng nhập hoặc mật khẩu không đúng");
+                                        } else { // có user
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                Log.d("save local name", document.getId() + " => " + document.getData());
+                                                LocalMemory.saveLocalUser(context, document.get("name", String.class));
+                                                break;
+                                            }
+                                            showToast("Đăng nhập thành công");
+                                            LocalMemory.saveLocalUser(context, username);
+                                            context.startActivity(new Intent(context, MainActivity.class));
+                                            getActivity().finish();
+                                        }
+                                    } else {
+                                        Log.d("login", "Error getting documents: ", task.getException());
+                                    }
                                 }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+                            });
+                }
             }
         });
         return view;

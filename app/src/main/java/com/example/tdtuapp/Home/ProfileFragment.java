@@ -16,6 +16,7 @@ import com.example.tdtuapp.LocalMemory.ConstantData;
 import com.example.tdtuapp.LocalMemory.LocalMemory;
 import com.example.tdtuapp.LoginSignUpActivity;
 import com.example.tdtuapp.R;
+import com.example.tdtuapp.firestore.firestoreAPI;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -42,13 +43,13 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 String localUser = LocalMemory.loadLocalUser(context);
                 // set token về rỗng
-                databaseReference.child("USERS").child(localUser).child("token").setValue("");
+                firestoreAPI.updateToken(localUser, "");
                 // xóa thông báo
                 NotificationManager notificationManager =
                         (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
                 notificationManager.cancelAll();
                 // set thành offline
-                databaseReference.child("USERS").child(localUser).child("isOnline").setValue(false);
+//                databaseReference.child("USERS").child(localUser).child("isOnline").setValue(false);
                 // xóa người dùng khỏi local máy
                 LocalMemory.saveLocalUser(context, "");
                 // di chuyển đến màn hình đăng nhập

@@ -75,6 +75,7 @@ public class ChatPreviewAdapter extends RecyclerView.Adapter<ChatPreviewAdapter.
             public void onClick(View v) {
                 Intent intent = new Intent(context, ChatActivity.class);
                 intent.putExtra("name", chatPreview.getName());
+                intent.putExtra("username", chatPreview.getUsername());
                 intent.putExtra("avatar", chatPreview.getAvatar());
                 intent.putExtra("chatKey", chatPreview.getChatKey());
                 context.startActivity(intent);

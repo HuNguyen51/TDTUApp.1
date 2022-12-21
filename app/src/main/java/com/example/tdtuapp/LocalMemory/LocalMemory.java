@@ -10,6 +10,39 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public final class LocalMemory {
+    // lưu TÊN NGƯỜI DÙNG trên máy vào bộ nhớ cục bộ
+    public static void saveLocalName(Context context, String data){
+        try {
+            FileOutputStream fileOutputStream = context.openFileOutput("name.txt", context.MODE_PRIVATE);
+            fileOutputStream.write(data.getBytes());
+            fileOutputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public static String loadLocalName(Context context){
+        String data = "";
+        try {
+            FileInputStream fileInputStream = context.openFileInput("name.txt");
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null){
+                stringBuilder.append(line);
+            }
+            data = stringBuilder.toString();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
     // lưu người dùng trên máy vào bộ nhớ cục bộ
     public static void saveLocalUser(Context context, String data){
         try {

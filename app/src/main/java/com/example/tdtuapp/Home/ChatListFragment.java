@@ -19,13 +19,19 @@ import com.example.tdtuapp.Home.ChatPreview.OnlineUserAdapter;
 import com.example.tdtuapp.LocalMemory.ConstantData;
 import com.example.tdtuapp.LocalMemory.LocalMemory;
 import com.example.tdtuapp.R;
+import com.example.tdtuapp.firestore.firestoreAPI;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.text.SimpleDateFormat;
@@ -35,6 +41,7 @@ import java.util.Locale;
 
 public class ChatListFragment extends Fragment {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl(ConstantData.realTimeDatabaseUrl);
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     RecyclerView rvChatList, rvUserOnline;
     ChatPreviewAdapter adapter ;
     OnlineUserAdapter adapterUserOnline;
@@ -55,19 +62,7 @@ public class ChatListFragment extends Fragment {
         chatPreviewList = new ArrayList<>();
         userOnlineList = new ArrayList<>();
 
-        // lấy token (mỗi máy có 1 token riêng)
         localUser = LocalMemory.loadLocalUser(context);
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
-            @Override
-            public void onComplete(@NonNull Task<String> task) {
-                if (task.isSuccessful()){
-                    String token = task.getResult();
-                    databaseReference.child("USERS").child(localUser).child("token").setValue(token);
-                } else {
-                    Log.d("get token failed", "Fetching FCM registration token failed", task.getException());
-                }
-            }
-        });
     }
 
     @Override
@@ -88,6 +83,22 @@ public class ChatListFragment extends Fragment {
         loadUserOnline();
         return view;
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("life", "resume chat");
+        databaseReference.child("USERS_ONLINE").child(localUser).setValue(true);
+
+        loadUser();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d("life", "pause chat");
+        databaseReference.child("USERS_ONLINE").child(localUser).setValue(false);
+    }
+
     private void loadUserOnline(){
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -95,103 +106,52 @@ public class ChatListFragment extends Fragment {
                 userOnlineList.clear();
                 adapterUserOnline.updateData(userOnlineList);
                 chatKey = "";
-                for (DataSnapshot userSnapshot : snapshot.child("USERS").getChildren()){
-                    String otherUser = userSnapshot.getKey();
-                    if (otherUser.equals(localUser)) continue; // bỏ phần phía sau
-                    // -----------------------------------------------------------
-                    if (!userSnapshot.hasChild("avatar") || !userSnapshot.hasChild("isOnline")) continue;
-                    String avatar = userSnapshot.child("avatar").getValue(String.class);
-                    String name = otherUser; //userSnapshot.child("name").getValue(String.class);
-                    Boolean isOnline = userSnapshot.child("isOnline").getValue(Boolean.class);
-                    if (!isOnline) continue;
-                    // -----------------------------------------------------------
-                    int chatChildrenCount = (int) snapshot.child("CHAT").getChildrenCount();
-                    if (chatChildrenCount == 0) continue; // bỏ phần phía sau
-                    // -----------------------------------------------------------
-                    for (DataSnapshot chatSnapshot : snapshot.child("CHAT").getChildren()){
-                        chatKey = chatSnapshot.getKey(); // id của đoạn chat
-                        // check members
-                        if (!chatSnapshot.hasChild("members") || !chatSnapshot.hasChild("messages")) continue;
-                        // -----------------------------------------------------------
-                        // kiểm tra thành viên trong đoạn chat của chatKey
-                        List<String> usersInChat = new ArrayList<>();
-                        for (DataSnapshot memberSnapshot : chatSnapshot.child("members").getChildren()){
-                            usersInChat.add(memberSnapshot.getKey());
-                        }
-                        // check message
-                        // nếu đoạn chat bao gồm các user này thì đã xác định đúng đoạn chat cần tìm
-                        if (usersInChat.contains(otherUser) && usersInChat.contains(localUser)){
-                            ChatPreview chatPreview = new ChatPreview(avatar, name, "", "", chatKey, false, isOnline);
-                            userOnlineList.add(chatPreview);
-                            adapterUserOnline.updateData(userOnlineList);
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d("life", "resume");
-        loadUser();
-    }
-
-    private void loadUser() {
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                chatPreviewList.clear();
                 chatKey = "";
-                for (DataSnapshot userSnapshot : snapshot.child("USERS").getChildren()){
-                    String otherUser = userSnapshot.getKey();
-                    if (otherUser.equals(localUser)) continue; // bỏ phần phía sau
-                    // -----------------------------------------------------------
-                    if (!userSnapshot.hasChild("avatar") || !userSnapshot.hasChild("isOnline")) continue;
-                    String avatar = userSnapshot.child("avatar").getValue(String.class);
-                    String name = otherUser; //userSnapshot.child("name").getValue(String.class);
-                    Boolean isOnline = userSnapshot.child("isOnline").getValue(Boolean.class);
-                    Boolean isSeen = true;
-
-                    int chatChildrenCount = (int) snapshot.child("CHAT").getChildrenCount();
-                    if (chatChildrenCount == 0) continue; // bỏ phần phía sau
-                    // -----------------------------------------------------------
-                    for (DataSnapshot chatSnapshot : snapshot.child("CHAT").getChildren()){
-                        chatKey = chatSnapshot.getKey(); // id của đoạn chat
-                        // check members
-                        if (!chatSnapshot.hasChild("members") || !chatSnapshot.hasChild("messages")) continue;
-                        // -----------------------------------------------------------
-                        // kiểm tra thành viên trong đoạn chat của chatKey
-                        List<String> usersInChat = new ArrayList<>();
-                        for (DataSnapshot memberSnapshot : chatSnapshot.child("members").getChildren()){
-                            usersInChat.add(memberSnapshot.getKey());
-                        }
-                        // check message
-                        // nếu đoạn chat bao gồm các user này thì đã xác định đúng đoạn chat cần tìm
-                        if (usersInChat.contains(otherUser) && usersInChat.contains(localUser)){
-                            long timeReadLastest = Long.parseLong(LocalMemory.loadLastMessageTime(context, chatKey));
-                            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aa", Locale.getDefault());
-                            for (DataSnapshot messageSnapshot : chatSnapshot.child("messages").getChildren()){
-                                lastMessage = messageSnapshot.child("msg").getValue(String.class);
-                                long timeSentenceChat = Long.parseLong(messageSnapshot.getKey());
-                                if (timeReadLastest < timeSentenceChat) isSeen = false;
-
-                                time = timeFormat.format(timeSentenceChat);
+                db.collection("Users")
+                    .whereNotEqualTo("username", localUser)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) { // các user
+                                    Log.d("load online user", document.getId() + " => " + document.getData());
+                                    String avatar = document.get("avatar", String.class);
+                                    String otherUser = document.get("username", String.class); // tên đăng nhập
+                                    String otherUserName = document.get("name", String.class); // tên người dùng
+                                    if (!snapshot.child("USERS_ONLINE").hasChild(otherUser)) continue;
+                                    boolean isOnline = snapshot.child("USERS_ONLINE").child(otherUser).getValue(Boolean.class);
+                                    Log.d("load online user", String.valueOf(isOnline));
+                                    if (isOnline == false) continue;
+                                    // -----------------------------
+                                    int chatChildrenCount = (int) snapshot.child("CHAT").getChildrenCount();
+                                    if (chatChildrenCount == 0) continue; // bỏ phần phía sau
+                                    // ---------------------------------------------------------
+                                    for (DataSnapshot chatSnapshot : snapshot.child("CHAT").getChildren()){
+                                        chatKey = chatSnapshot.getKey(); // id của đoạn chat
+                                        // check members
+                                        if (!chatSnapshot.hasChild("members") || !chatSnapshot.hasChild("messages")) continue;
+                                        // -----------------------------------------------------------
+                                        // kiểm tra thành viên trong đoạn chat của chatKey
+                                        List<String> usersInChat = new ArrayList<>();
+                                        for (DataSnapshot memberSnapshot : chatSnapshot.child("members").getChildren()){
+                                            usersInChat.add(memberSnapshot.getKey());
+                                        }
+                                        // check message
+                                        // nếu đoạn chat bao gồm các user này thì đã xác định đúng đoạn chat cần tìm
+                                        if (usersInChat.contains(otherUser) && usersInChat.contains(localUser)){
+                                            ChatPreview chatPreview = new ChatPreview(avatar, otherUserName, "", "", chatKey, false, isOnline);
+                                            chatPreview.setUsername(otherUser);
+                                            userOnlineList.add(chatPreview);
+                                            adapterUserOnline.updateData(userOnlineList);
+                                        }
+                                    }
+                                }
                             }
-                            ChatPreview chatPreview = new ChatPreview(avatar, name, lastMessage, time, chatKey, isSeen, isOnline);
-                            chatPreviewList.add(chatPreview);
-                            adapter.updateData(chatPreviewList);
-                        }
-                    }
 
-                }
-                loadRemainUser();
+                        }
+
+                    });
             }
 
             @Override
@@ -199,39 +159,75 @@ public class ChatListFragment extends Fragment {
 
             }
         });
+
     }
-    private void loadRemainUser() {
-        databaseReference.child("USERS").addValueEventListener(new ValueEventListener() {
+    private void loadUser() {
+        chatPreviewList.clear();
+        adapter.updateData(chatPreviewList);
+        loadUnreadUser();
+        loadReadUser();
+        loadRemainerUser();
+    }
+    private void loadReadUser() {
+        databaseReference.child("CHAT").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot userSnapshot : snapshot.getChildren()){
-                    String otherUser = userSnapshot.getKey();
-                    if (otherUser.equals(localUser)) continue; // bỏ phần phía sau
-                    boolean isExists = false;
-                    // nếu user đã tồn tại
-                    for (ChatPreview cp : chatPreviewList){
-                        Log.d("not exists user", cp.getName() + " " + otherUser);
-                        if (otherUser.equals(cp.getName())){
-                            isExists = true;
-                            break;
-                        }
-                    }
-                    Log.d("not exists user", String.valueOf(isExists));
-                    if (isExists == false){
-                        Log.d("not exists user", "Thỏa điều kiện user chưa tồn tại trong danh sách bạn bè");
-                        String avatar = "";
-                        if (userSnapshot.hasChild("avatar"))
-                                userSnapshot.child("avatar").getValue(String.class);
-                        String name = otherUser; //userSnapshot.child("name").getValue(String.class);
-                        Boolean isOnline = true;
-                        if (userSnapshot.hasChild("isOnline"))
-                            isOnline = userSnapshot.child("isOnline").getValue(Boolean.class);
+                chatKey = "";
+                db.collection("Users")
+                        .whereNotEqualTo("username", localUser)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) { // các user
+                                        Log.d("load read chat", document.getId() + " => " + document.getData());
+                                        String avatar = document.get("avatar", String.class);
+                                        String otherUser = document.get("username", String.class); // tên đăng nhập
+                                        String otherUserName = document.get("name", String.class); // tên người dùng
+//                                        Boolean isOnline = userSnapshot.child("isOnline").getValue(Boolean.class);
+                                        Boolean isSeen = true;
 
-                        ChatPreview chatPreview = new ChatPreview(avatar, name, "Người lạ", "", "", false, isOnline);
-                        chatPreviewList.add(chatPreview);
-                        adapter.updateData(chatPreviewList);
-                    }
-                }
+                                        int chatChildrenCount = (int) snapshot.getChildrenCount();
+                                        if (chatChildrenCount == 0) continue; // bỏ phần phía sau
+                                        for (DataSnapshot chatSnapshot : snapshot.getChildren()){
+                                            chatKey = chatSnapshot.getKey(); // id của đoạn chat
+                                            // check members
+                                            if (!chatSnapshot.hasChild("members") || !chatSnapshot.hasChild("messages")) continue;
+                                            // -----------------------------------------------------------
+                                            // kiểm tra thành viên trong đoạn chat của chatKey
+                                            List<String> usersInChat = new ArrayList<>();
+                                            for (DataSnapshot memberSnapshot : chatSnapshot.child("members").getChildren()){
+                                                usersInChat.add(memberSnapshot.getKey());
+                                            }
+                                            // check message
+                                            // nếu đoạn chat bao gồm các user này thì đã xác định đúng đoạn chat cần tìm
+                                            if (usersInChat.contains(otherUser) && usersInChat.contains(localUser)){
+
+                                                long timeReadLastest = Long.parseLong(LocalMemory.loadLastMessageTime(context, chatKey));
+                                                SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aa", Locale.getDefault());
+                                                for (DataSnapshot messageSnapshot : chatSnapshot.child("messages").getChildren()){
+                                                    lastMessage = messageSnapshot.child("msg").getValue(String.class);
+                                                    long timeSentenceChat = Long.parseLong(messageSnapshot.getKey());
+                                                    if (timeReadLastest < timeSentenceChat) isSeen = false;
+
+                                                    time = timeFormat.format(timeSentenceChat);
+                                                }
+
+                                                if (isSeen == true){
+                                                    ChatPreview chatPreview = new ChatPreview(avatar, otherUserName, lastMessage, time, chatKey, isSeen, false);
+                                                    chatPreview.setUsername(otherUser);
+                                                    chatPreviewList.add(chatPreview);
+                                                    adapter.updateData(chatPreviewList);
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    Log.d("load read chat", "Error getting documents: ", task.getException());
+                                }
+                            }
+                        });
             }
 
             @Override
@@ -240,4 +236,119 @@ public class ChatListFragment extends Fragment {
             }
         });
     }
+    private void loadUnreadUser() {
+        databaseReference.child("CHAT").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                chatKey = "";
+                db.collection("Users")
+                        .whereNotEqualTo("username", localUser)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) { // các user
+                                        Log.d("load read chat", document.getId() + " => " + document.getData());
+                                        String avatar = document.get("avatar", String.class); // hình đại diện
+                                        String otherUser = document.get("username", String.class); // tên đăng nhập
+                                        String otherUserName = document.get("name", String.class); // tên người dùng
+//                                        Boolean isOnline = userSnapshot.child("isOnline").getValue(Boolean.class);
+                                        Boolean isSeen = true;
+
+                                        int chatChildrenCount = (int) snapshot.getChildrenCount();
+                                        if (chatChildrenCount == 0) continue; // bỏ phần phía sau
+                                        for (DataSnapshot chatSnapshot : snapshot.getChildren()){
+                                            chatKey = chatSnapshot.getKey(); // id của đoạn chat
+                                            // check members
+                                            if (!chatSnapshot.hasChild("members") || !chatSnapshot.hasChild("messages")) continue;
+                                            // -----------------------------------------------------------
+                                            // kiểm tra thành viên trong đoạn chat của chatKey
+                                            List<String> usersInChat = new ArrayList<>();
+                                            for (DataSnapshot memberSnapshot : chatSnapshot.child("members").getChildren()){
+                                                usersInChat.add(memberSnapshot.getKey());
+                                            }
+                                            // check message
+                                            // nếu đoạn chat bao gồm các user này thì đã xác định đúng đoạn chat cần tìm
+                                            if (usersInChat.contains(otherUser) && usersInChat.contains(localUser)){
+                                                long timeReadLastest = Long.parseLong(LocalMemory.loadLastMessageTime(context, chatKey));
+                                                SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aa", Locale.getDefault());
+                                                for (DataSnapshot messageSnapshot : chatSnapshot.child("messages").getChildren()){
+                                                    lastMessage = messageSnapshot.child("msg").getValue(String.class);
+                                                    long timeSentenceChat = Long.parseLong(messageSnapshot.getKey());
+                                                    if (timeReadLastest < timeSentenceChat) isSeen = false;
+
+                                                    time = timeFormat.format(timeSentenceChat);
+                                                }
+                                                if (isSeen == false){
+                                                    ChatPreview chatPreview = new ChatPreview(avatar, otherUserName, lastMessage, time, chatKey, isSeen, false);
+                                                    chatPreview.setUsername(otherUser);
+                                                    chatPreviewList.add(chatPreview);
+                                                    adapter.updateData(chatPreviewList);
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    Log.d("load read chat", "Error getting documents: ", task.getException());
+                                }
+                            }
+                        });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+    private void loadRemainerUser() {
+        databaseReference.child("CHAT").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                db.collection("Users")
+                        .whereNotEqualTo("username", localUser)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) { // các user
+                                        Log.d("load read chat", document.getId() + " => " + document.getData());
+                                        String avatar = document.get("avatar", String.class); // hình đại diện
+                                        String otherUser = document.get("username", String.class); // tên đăng nhập
+                                        String otherUserName = document.get("name", String.class); // tên người dùng
+
+                                        boolean isExists = false;
+                                        // nếu user đã tồn tại
+                                        for (ChatPreview cp : chatPreviewList){
+                                            if (otherUser.equals(cp.getUsername())){
+                                                isExists = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if (isExists == false){
+                                            Log.d("not exists user", "Thỏa điều kiện user chưa tồn tại trong danh sách bạn bè");
+                                            ChatPreview chatPreview = new ChatPreview(avatar, otherUserName, "Người lạ", "", "", false, false);
+                                            chatPreview.setUsername(otherUser);
+                                            chatPreviewList.add(chatPreview);
+                                            adapter.updateData(chatPreviewList);
+                                        }
+                                    }
+                                } else {
+                                    Log.d("load read chat", "Error getting documents: ", task.getException());
+                                }
+                            }
+                        });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+
 }

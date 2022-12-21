@@ -77,47 +77,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         Notification notification = notificationBuilder.build();
-        //notification.flags = Notification.FLAG_AUTO_CANCEL;
-
+//        notification.flags = Notification.FLAG_AUTO_CANCEL;
+//        new Random().nextInt(101)
         if (notificationManager != null){
-            notificationManager.notify(new Random().nextInt(101), notification);
+            notificationManager.notify(101, notification);
         }
     }
 
-    @Override
-    public void onMessageSent(@NonNull String msgId) {
-        super.onMessageSent(msgId);
-    }
-
-    @Override
-    public void onDeletedMessages() {
-        super.onDeletedMessages();
-    }
-
-    @Override
-    public void onSendError(@NonNull String msgId, @NonNull Exception exception) {
-        super.onSendError(msgId, exception);
-    }
-
-    @Override
-    protected Intent getStartCommandIntent(Intent originalIntent) {
-        return super.getStartCommandIntent(originalIntent);
-    }
-
-    @Override
-    public void handleIntent(Intent intent) {
-        super.handleIntent(intent);
-    }
-
-//    @Override
-//    public void onNewToken(@NonNull String token) {
-//        super.onNewToken(token);
-//        updateToken(token);
-//    }
-//    private void updateToken(String token){
-//        String localUser = LocalMemory.loadLocalUser(getApplicationContext());
-//        Map<String, Object> map = new HashMap<>();
-//        map.put("token", token);
-//        databaseReference.child("USERS").child(localUser).updateChildren(map);
-//    }
 }

@@ -1,7 +1,7 @@
 package com.example.tdtuapp.Home.ChatPreview;
 
 public class ChatPreview {
-    private String avatar, name, lastMessage, time, chatKey;
+    private String avatar, name, lastMessage, time, chatKey, username;
     private boolean isSeen, isOnline;
 
     public ChatPreview(String avatar, String name, String lastMessage, String time, String chatKey, boolean isSeen, boolean isOnline) {
@@ -12,6 +12,14 @@ public class ChatPreview {
         this.chatKey = chatKey;
         this.isSeen = isSeen;
         this.isOnline = isOnline;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getAvatar() {
