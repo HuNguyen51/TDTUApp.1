@@ -80,7 +80,6 @@ public class ChatListFragment extends Fragment {
         rvChatList.setAdapter(adapter);
         rvUserOnline.setAdapter(adapterUserOnline);
 
-        loadUserOnline();
         return view;
     }
     @Override
@@ -88,15 +87,14 @@ public class ChatListFragment extends Fragment {
         super.onResume();
         Log.d("life", "resume chat");
         databaseReference.child("USERS_ONLINE").child(localUser).setValue(true);
-
         loadUser();
+        loadUserOnline();
     }
-
     @Override
-    public void onPause() {
-        super.onPause();
-        Log.d("life", "pause chat");
+    public void onDestroy() {
         databaseReference.child("USERS_ONLINE").child(localUser).setValue(false);
+        Log.d("life", "stop chat");
+        super.onDestroy();
     }
 
     private void loadUserOnline(){
@@ -106,7 +104,6 @@ public class ChatListFragment extends Fragment {
                 userOnlineList.clear();
                 adapterUserOnline.updateData(userOnlineList);
                 chatKey = "";
-                chatKey = "";
                 db.collection("Users")
                     .whereNotEqualTo("username", localUser)
                     .get()
@@ -115,15 +112,16 @@ public class ChatListFragment extends Fragment {
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
                                 for (QueryDocumentSnapshot document : task.getResult()) { // các user
-                                    Log.d("load online user", document.getId() + " => " + document.getData());
+//                                    Log.d("load online user", document.getId() + " => " + document.getData());
                                     String avatar = document.get("avatar", String.class);
                                     String otherUser = document.get("username", String.class); // tên đăng nhập
                                     String otherUserName = document.get("name", String.class); // tên người dùng
+
                                     if (!snapshot.child("USERS_ONLINE").hasChild(otherUser)) continue;
                                     boolean isOnline = snapshot.child("USERS_ONLINE").child(otherUser).getValue(Boolean.class);
-                                    Log.d("load online user", String.valueOf(isOnline));
                                     if (isOnline == false) continue;
                                     // -----------------------------
+
                                     int chatChildrenCount = (int) snapshot.child("CHAT").getChildrenCount();
                                     if (chatChildrenCount == 0) continue; // bỏ phần phía sau
                                     // ---------------------------------------------------------
@@ -133,6 +131,7 @@ public class ChatListFragment extends Fragment {
                                         if (!chatSnapshot.hasChild("members") || !chatSnapshot.hasChild("messages")) continue;
                                         // -----------------------------------------------------------
                                         // kiểm tra thành viên trong đoạn chat của chatKey
+
                                         List<String> usersInChat = new ArrayList<>();
                                         for (DataSnapshot memberSnapshot : chatSnapshot.child("members").getChildren()){
                                             usersInChat.add(memberSnapshot.getKey());
@@ -140,7 +139,7 @@ public class ChatListFragment extends Fragment {
                                         // check message
                                         // nếu đoạn chat bao gồm các user này thì đã xác định đúng đoạn chat cần tìm
                                         if (usersInChat.contains(otherUser) && usersInChat.contains(localUser)){
-                                            ChatPreview chatPreview = new ChatPreview(avatar, otherUserName, "", "", chatKey, false, isOnline);
+                                            ChatPreview chatPreview = new ChatPreview(avatar, otherUserName, "", "", chatKey, false, true);
                                             chatPreview.setUsername(otherUser);
                                             userOnlineList.add(chatPreview);
                                             adapterUserOnline.updateData(userOnlineList);
@@ -161,17 +160,13 @@ public class ChatListFragment extends Fragment {
         });
 
     }
+
     private void loadUser() {
-        chatPreviewList.clear();
-        adapter.updateData(chatPreviewList);
-        loadUnreadUser();
-        loadReadUser();
-        loadRemainerUser();
-    }
-    private void loadReadUser() {
         databaseReference.child("CHAT").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                chatPreviewList.clear();
+                adapter.updateData(chatPreviewList);
                 chatKey = "";
                 db.collection("Users")
                         .whereNotEqualTo("username", localUser)
@@ -190,6 +185,8 @@ public class ChatListFragment extends Fragment {
 
                                         int chatChildrenCount = (int) snapshot.getChildrenCount();
                                         if (chatChildrenCount == 0) continue; // bỏ phần phía sau
+
+                                        // add user chưa xem
                                         for (DataSnapshot chatSnapshot : snapshot.getChildren()){
                                             chatKey = chatSnapshot.getKey(); // id của đoạn chat
                                             // check members
@@ -214,7 +211,7 @@ public class ChatListFragment extends Fragment {
                                                     time = timeFormat.format(timeSentenceChat);
                                                 }
 
-                                                if (isSeen == true){
+                                                if (isSeen == false){
                                                     ChatPreview chatPreview = new ChatPreview(avatar, otherUserName, lastMessage, time, chatKey, isSeen, false);
                                                     chatPreview.setUsername(otherUser);
                                                     chatPreviewList.add(chatPreview);
@@ -228,6 +225,7 @@ public class ChatListFragment extends Fragment {
                                 }
                             }
                         });
+                loadreadUser();
             }
 
             @Override
@@ -236,7 +234,7 @@ public class ChatListFragment extends Fragment {
             }
         });
     }
-    private void loadUnreadUser() {
+    private void loadreadUser() {
         databaseReference.child("CHAT").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -280,7 +278,7 @@ public class ChatListFragment extends Fragment {
 
                                                     time = timeFormat.format(timeSentenceChat);
                                                 }
-                                                if (isSeen == false){
+                                                if (isSeen == true){
                                                     ChatPreview chatPreview = new ChatPreview(avatar, otherUserName, lastMessage, time, chatKey, isSeen, false);
                                                     chatPreview.setUsername(otherUser);
                                                     chatPreviewList.add(chatPreview);
@@ -294,6 +292,7 @@ public class ChatListFragment extends Fragment {
                                 }
                             }
                         });
+                loadRemainerUser();
             }
 
             @Override

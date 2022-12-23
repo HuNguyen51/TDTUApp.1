@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                 FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         mViewPager.setAdapter(viewPagerAdapterBottomDirection);
         // load mặc định đến trang 2
-        mViewPager.setCurrentItem(2);
+        mViewPager.setCurrentItem(0);
 
         mTabLayout.setupWithViewPager(mViewPager);
         ActionBar actionbar = getSupportActionBar();
@@ -76,7 +76,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         Log.d("life", "pause main");
-        databaseReference.child("USERS_ONLINE").child(localUser).setValue(false);
     }
 
+    @Override
+    protected void onStop() {
+//        databaseReference.child("USERS_ONLINE").child(localUser).setValue(false);
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        databaseReference.child("USERS_ONLINE").child(localUser).setValue(false);
+        super.onDestroy();
+    }
 }

@@ -9,7 +9,7 @@
     tools:context=".LoginSignUpActivity">
 
     <!--    Ảnh logo App-->
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingVertical="20dp"

@@ -23,6 +23,7 @@ import com.example.tdtuapp.LoginSignUpActivity;
 import com.example.tdtuapp.MainActivity;
 import com.example.tdtuapp.firestore.firestoreAPI;
 import com.example.tdtuapp.R;
+import com.example.tdtuapp.hash.ArgonHash;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -97,11 +98,14 @@ public class SignUpFragment extends Fragment {
                                             Map<String, Object> user = new HashMap<>();
                                             user.put("username", username);
                                             user.put("name", username);
-                                            user.put("password", password);
+                                            user.put("password", ArgonHash.hash(password));
                                             user.put("email", email);
                                             user.put("avatar", "");
                                             user.put("role", "student");
                                             user.put("token", "");
+                                            user.put("faculty", "");
+                                            user.put("isBan", false);
+                                            user.put("check", true);
 
                                             firestoreAPI.register(user); // firestore
 

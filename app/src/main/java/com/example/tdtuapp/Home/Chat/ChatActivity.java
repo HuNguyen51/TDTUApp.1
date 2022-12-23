@@ -246,8 +246,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             // gửi thông báo
                             String token = document.get("token", String.class);
 
-
-
                             JSONObject to = new JSONObject();
                             JSONObject data = new JSONObject();
                             try {

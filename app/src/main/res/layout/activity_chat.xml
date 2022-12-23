@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Home.Chat.ChatActivity">
+    tools:context=".Home.Chat.ChatActivity"
+    android:background="#80DEEA">
 
     <RelativeLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FBFBFB"
+        android:background="#000000"
         >
 
         <ImageView
@@ -24,7 +25,7 @@
             android:layout_marginTop="20dp"
             android:src="@drawable/ic_baseline_arrow_back_24"/>
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imProfileInChat"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -32,7 +33,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="20dp"
             android:layout_toEndOf="@+id/btnBack"
-            android:src="@drawable/user"/>
+            android:src="@drawable/_56_3562377_personal_user"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -46,6 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Username"
+                android:textColor="#FFFFFF"
                 android:maxLines="1"
                 android:textSize="18sp"
                 android:textStyle="bold"/>
@@ -80,18 +82,19 @@
         android:layout_alignParentBottom="true"
         android:background="#FBFBFB"
         android:paddingVertical="10dp">
+
         <EditText
             android:id="@+id/edtTypeText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:backgroundTint="@android:color/transparent"
             android:layout_marginStart="20dp"
-            android:layout_marginEnd="10dp"
-            android:maxLines="4"
-            android:inputType="textMultiLine"
+            android:layout_marginEnd="11dp"
             android:layout_toStartOf="@+id/btnSend"
-            android:hint="Soạn tin nhắn ..."/>
+            android:backgroundTint="@android:color/transparent"
+            android:hint="Soạn tin nhắn ..."
+            android:inputType="textMultiLine"
+            android:maxLines="4"
+            android:textSize="14sp" />
 
         <ImageView
             android:id="@+id/btnSend"

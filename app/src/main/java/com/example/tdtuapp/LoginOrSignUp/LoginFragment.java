@@ -22,6 +22,7 @@ import com.example.tdtuapp.LocalMemory.LocalMemory;
 import com.example.tdtuapp.LoginSignUpActivity;
 import com.example.tdtuapp.MainActivity;
 import com.example.tdtuapp.R;
+import com.example.tdtuapp.hash.ArgonHash;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -62,8 +63,8 @@ public class LoginFragment extends Fragment {
         btLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = etEmailLogin.getText().toString();
-                String password = etPasswordLogin.getText().toString();
+                final String username = etEmailLogin.getText().toString();
+                final String password = etPasswordLogin.getText().toString();
 
                 if (username.isEmpty()) showToast("Vui lòng nhập tài khoản");
                 else if (password.isEmpty()) showToast("Vui lòng nhập mật khẩu");
@@ -72,8 +73,7 @@ public class LoginFragment extends Fragment {
                     // TODO
                     FirebaseFirestore db = FirebaseFirestore.getInstance();
                     db.collection("Users")
-                            .whereEqualTo("username", username)
-                            .whereEqualTo("password", password)
+                            .whereEqualTo("username", username)// lấy user có username này
                             .get()
                             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                 @Override
@@ -81,16 +81,23 @@ public class LoginFragment extends Fragment {
                                     if (task.isSuccessful()) {
                                         if (task.getResult().isEmpty()){ // không có user
                                             showToast("Tên đăng nhập hoặc mật khẩu không đúng");
-                                        } else { // có user
+                                        }
+                                        else { // có user
                                             for (QueryDocumentSnapshot document : task.getResult()) {
                                                 Log.d("save local name", document.getId() + " => " + document.getData());
-                                                LocalMemory.saveLocalUser(context, document.get("name", String.class));
+                                                String hashPass = document.get("password", String.class);
+                                                if (!ArgonHash.verify(password, hashPass)){
+                                                    showToast("Tên đăng nhập hoặc mật khẩu không đúng");
+                                                } else {
+                                                    showToast("Đăng nhập thành công");
+                                                    LocalMemory.saveLocalUser(context, username);
+                                                    LocalMemory.saveLocalName(context, document.get("name", String.class));
+                                                    context.startActivity(new Intent(context, MainActivity.class));
+                                                    getActivity().finish();
+                                                }
                                                 break;
                                             }
-                                            showToast("Đăng nhập thành công");
-                                            LocalMemory.saveLocalUser(context, username);
-                                            context.startActivity(new Intent(context, MainActivity.class));
-                                            getActivity().finish();
+
                                         }
                                     } else {
                                         Log.d("login", "Error getting documents: ", task.getException());

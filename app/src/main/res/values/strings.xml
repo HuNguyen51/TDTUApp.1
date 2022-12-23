@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TDTU App</string>
+    <string name="app_name" translatable="false">TDTER CONNECTION</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
