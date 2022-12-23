@@ -7,8 +7,10 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.example.tdtuapp.Home.ViewPagerAdapterBottomDirection;
 import com.example.tdtuapp.LocalMemory.ConstantData;
@@ -54,6 +56,11 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.setAdapter(viewPagerAdapterBottomDirection);
         // load mặc định đến trang 2
         mViewPager.setCurrentItem(0);
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
 
         mTabLayout.setupWithViewPager(mViewPager);
         ActionBar actionbar = getSupportActionBar();

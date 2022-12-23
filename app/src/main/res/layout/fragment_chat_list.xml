@@ -6,7 +6,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".Home.ChatListFragment">
+    tools:context=".Home.ChatListFragment"
+    android:background="#26C6DA">
 
     <!-- TODO: Update blank fragment layout -->
     <androidx.cardview.widget.CardView
@@ -22,7 +23,7 @@
             android:layout_height="match_parent"
             android:focusable="false"
             android:drawableLeft="@drawable/ic_baseline_search_24"
-            android:background="#86FFFFFF"
+            android:background="#B2EBF2"
             android:paddingStart="16dp"
             android:hint="Tìm kiếm"
             />

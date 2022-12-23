@@ -7,6 +7,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import com.example.tdtuapp.LocalMemory.LocalMemory;
 import com.example.tdtuapp.LoginOrSignUp.ViewPagerAdapterLoginSignUp;
@@ -30,6 +31,12 @@ public class LoginSignUpActivity extends AppCompatActivity {
         mViewPager.setAdapter(viewPagerAdapterLoginSignUp);
 
         mTabLayout.setupWithViewPager(mViewPager);
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+
         ActionBar actionbar = getSupportActionBar();
         actionbar.hide();
     }

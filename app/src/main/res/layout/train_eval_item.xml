@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Home.TrainingEvaluationFragment"
+    android:background="#26C6DA">
+    <!-- TODO: Update blank fragment layout -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/academic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="10dp"
+        android:layout_margin="5dp"
+        android:outlineAmbientShadowColor="@color/black"
+        android:outlineSpotShadowColor="@color/black"
+        android:layout_centerHorizontal="true"
+        android:elevation="10dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/imAvatarCLB"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="8dp"
+                    android:src="@drawable/_56_3562377_personal_user"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_gravity="center">
+                    <TextView
+                        android:id="@+id/tvNameCLB"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentBottom="true"
+                        android:textSize="20sp"
+                        android:text="Tên câu lạc bộ"/>
+                    <TextView
+                        android:id="@+id/tvCreateDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentBottom="true"
+                        android:textSize="12sp"
+                        android:text="2022-12-12"/>
+
+                </LinearLayout>
+
+                <Spinner
+                    android:id="@+id/spAction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:gravity="center"
+                    android:layout_gravity="center" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/imPost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:adjustViewBounds="true"
+                android:src="@drawable/imager_7626" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                >
+                <TextView
+                    android:id="@+id/tvField"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Học thuật"
+                    android:layout_gravity="center_vertical"
+                    android:textStyle="bold"
+                    android:gravity="start"/>
+                <LinearLayout
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_weight="15"
+                    android:gravity="end">
+                    <TextView
+                        android:id="@+id/tvFromDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:text="2022-12-12"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" : "/>
+                    <TextView
+                        android:id="@+id/tvToDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:text="2022-12-12"/>
+                </LinearLayout>
+
+            </LinearLayout>
+            <TextView
+                android:id="@+id/tvContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đâyNội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đâyNội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đâyNội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đâyNội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đâyNội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đâyNội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đây Nội dung ở đây"
+                android:maxLines="5"
+                android:scrollbars="vertical"
+
+                android:padding="5dp"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>
