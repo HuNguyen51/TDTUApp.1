@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Home.Chat.ChatActivity"
-    android:background="#80DEEA">
+    android:background="#26C6DA">
 
     <RelativeLayout
         android:id="@+id/topBar"

@@ -16,8 +16,7 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayoutBottomDirection"
         android:layout_width="match_parent"
-        android:background="#000000"
-        app:tabTextColor="@color/white"
+        android:background="@color/bar"
         android:layout_height="0dp"
         android:layout_weight="0.7"
         />

@@ -66,7 +66,9 @@
                 android:layout_centerHorizontal="true"
                 android:layout_alignParentBottom="true"
                 android:textSize="20sp"
-                android:text="Học Thuật"/>
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:text="Học thuật"/>
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>
@@ -100,6 +102,8 @@
                 android:layout_centerHorizontal="true"
                 android:layout_alignParentBottom="true"
                 android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
                 android:text="Hoạt động"/>
         </RelativeLayout>
 
@@ -134,6 +138,8 @@
                 android:layout_centerHorizontal="true"
                 android:layout_alignParentBottom="true"
                 android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
                 android:text="Tình nguyện"/>
         </RelativeLayout>
 

@@ -40,7 +40,7 @@
                         android:id="@+id/etEmailLogin"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Tên đăng nhập hoặc Email"
+                        android:hint="Tên đăng nhập"
                         android:inputType="textEmailAddress"
                         android:backgroundTint="@color/white"
                         android:textSize="16sp"

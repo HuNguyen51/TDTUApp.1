@@ -56,13 +56,18 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.setAdapter(viewPagerAdapterBottomDirection);
         // load mặc định đến trang 2
         mViewPager.setCurrentItem(0);
+        mTabLayout.setupWithViewPager(mViewPager);
+        mTabLayout.getTabAt(0).setIcon(R.drawable.icon_run);
+        mTabLayout.getTabAt(1).setIcon(R.drawable.ic_comment);
+        mTabLayout.getTabAt(2).setIcon(R.drawable.user);
+        mTabLayout.getTabAt(3).setIcon(R.drawable.icon_info);
 
         View decorView = getWindow().getDecorView();
         // Hide the status bar.
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
 
-        mTabLayout.setupWithViewPager(mViewPager);
+
         ActionBar actionbar = getSupportActionBar();
         actionbar.hide();
     }

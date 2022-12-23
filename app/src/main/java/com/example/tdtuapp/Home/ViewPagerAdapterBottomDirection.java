@@ -21,11 +21,11 @@ public class ViewPagerAdapterBottomDirection extends FragmentStatePagerAdapter {
             case 0:
                 return new TrainingEvaluationFragment();
             case 1:
-                return new NotificationFragment();
-            case 2:
                 return new ChatListFragment();
-            case 3:
+            case 2:
                 return new ProfileFragment();
+            case 3:
+                return new NotificationFragment();
             default:
                 return new TrainingEvaluationFragment();
         }
@@ -36,24 +36,24 @@ public class ViewPagerAdapterBottomDirection extends FragmentStatePagerAdapter {
         return 4;
     }
 
-    @Nullable
-    @Override
-    public CharSequence getPageTitle(int position) {
-        String title = "";
-        switch (position){
-            case 0:
-                title = "Điểm rèn luyện";
-                break;
-            case 1:
-                title = "Thông báo";
-                break;
-            case 2:
-                title = "Nhắn tin";
-                break;
-            case 3:
-                title = "Cá nhân";
-                break;
-        }
-        return title;
-    }
+//    @Nullable
+//    @Override
+//    public CharSequence getPageTitle(int position) {
+//        String title = "";
+//        switch (position){
+//            case 0:
+//                title = "Điểm rèn luyện";
+//                break;
+//            case 1:
+//                title = "Nhắn tin";
+//                break;
+//            case 2:
+//                title = "Cá nhân";
+//                break;
+//            case 3:
+//                title = "Thông tin";
+//                break;
+//        }
+//        return title;
+//    }
 }

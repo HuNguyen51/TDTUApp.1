@@ -162,7 +162,7 @@ public class ChatListFragment extends Fragment {
     }
 
     private void loadUser() {
-        databaseReference.child("CHAT").addValueEventListener(new ValueEventListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 chatPreviewList.clear();
@@ -182,12 +182,16 @@ public class ChatListFragment extends Fragment {
                                         String otherUserName = document.get("name", String.class); // tên người dùng
 //                                        Boolean isOnline = userSnapshot.child("isOnline").getValue(Boolean.class);
                                         Boolean isSeen = true;
+                                        Boolean isOnline = false;
+                                        if (snapshot.child("USERS_ONLINE").hasChild(otherUser)){
+                                            isOnline = snapshot.child("USERS_ONLINE").child(otherUser).getValue(Boolean.class);
+                                        }
 
-                                        int chatChildrenCount = (int) snapshot.getChildrenCount();
+                                        int chatChildrenCount = (int) snapshot.child("CHAT").getChildrenCount();
                                         if (chatChildrenCount == 0) continue; // bỏ phần phía sau
 
                                         // add user chưa xem
-                                        for (DataSnapshot chatSnapshot : snapshot.getChildren()){
+                                        for (DataSnapshot chatSnapshot : snapshot.child("CHAT").getChildren()){
                                             chatKey = chatSnapshot.getKey(); // id của đoạn chat
                                             // check members
                                             if (!chatSnapshot.hasChild("members") || !chatSnapshot.hasChild("messages")) continue;
@@ -212,7 +216,7 @@ public class ChatListFragment extends Fragment {
                                                 }
 
                                                 if (isSeen == false){
-                                                    ChatPreview chatPreview = new ChatPreview(avatar, otherUserName, lastMessage, time, chatKey, isSeen, false);
+                                                    ChatPreview chatPreview = new ChatPreview(avatar, otherUserName, lastMessage, time, chatKey, isSeen, isOnline);
                                                     chatPreview.setUsername(otherUser);
                                                     chatPreviewList.add(chatPreview);
                                                     adapter.updateData(chatPreviewList);
@@ -235,7 +239,7 @@ public class ChatListFragment extends Fragment {
         });
     }
     private void loadreadUser() {
-        databaseReference.child("CHAT").addValueEventListener(new ValueEventListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 chatKey = "";
@@ -254,9 +258,14 @@ public class ChatListFragment extends Fragment {
 //                                        Boolean isOnline = userSnapshot.child("isOnline").getValue(Boolean.class);
                                         Boolean isSeen = true;
 
-                                        int chatChildrenCount = (int) snapshot.getChildrenCount();
+                                        Boolean isOnline = false;
+                                        if (snapshot.child("USERS_ONLINE").hasChild(otherUser)){
+                                            isOnline = snapshot.child("USERS_ONLINE").child(otherUser).getValue(Boolean.class);
+                                        }
+;
+                                        int chatChildrenCount = (int) snapshot.child("CHAT").getChildrenCount();
                                         if (chatChildrenCount == 0) continue; // bỏ phần phía sau
-                                        for (DataSnapshot chatSnapshot : snapshot.getChildren()){
+                                        for (DataSnapshot chatSnapshot : snapshot.child("CHAT").getChildren()){
                                             chatKey = chatSnapshot.getKey(); // id của đoạn chat
                                             // check members
                                             if (!chatSnapshot.hasChild("members") || !chatSnapshot.hasChild("messages")) continue;
@@ -279,7 +288,7 @@ public class ChatListFragment extends Fragment {
                                                     time = timeFormat.format(timeSentenceChat);
                                                 }
                                                 if (isSeen == true){
-                                                    ChatPreview chatPreview = new ChatPreview(avatar, otherUserName, lastMessage, time, chatKey, isSeen, false);
+                                                    ChatPreview chatPreview = new ChatPreview(avatar, otherUserName, lastMessage, time, chatKey, isSeen, isOnline);
                                                     chatPreview.setUsername(otherUser);
                                                     chatPreviewList.add(chatPreview);
                                                     adapter.updateData(chatPreviewList);
@@ -329,7 +338,7 @@ public class ChatListFragment extends Fragment {
 
                                         if (isExists == false){
                                             Log.d("not exists user", "Thỏa điều kiện user chưa tồn tại trong danh sách bạn bè");
-                                            ChatPreview chatPreview = new ChatPreview(avatar, otherUserName, "Người lạ", "", "", false, false);
+                                            ChatPreview chatPreview = new ChatPreview(avatar, otherUserName, "Người lạ", "", "", true, false);
                                             chatPreview.setUsername(otherUser);
                                             chatPreviewList.add(chatPreview);
                                             adapter.updateData(chatPreviewList);
