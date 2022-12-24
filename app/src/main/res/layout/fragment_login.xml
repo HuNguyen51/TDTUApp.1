@@ -85,10 +85,10 @@
                 android:text="Đăng nhập"/>
 
             <TextView
-                android:id="@+id/tvForgotPassword"
+                android:id="@+id/tvChangePass"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Quên mật khẩu"
+                android:text="Đổi mật khẩu"
                 android:layout_gravity="center"
                 android:textSize="16sp"
                 android:textColor="@color/white"/>

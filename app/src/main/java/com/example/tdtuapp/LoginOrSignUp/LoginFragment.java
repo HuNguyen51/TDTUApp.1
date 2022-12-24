@@ -14,8 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tdtuapp.ChangePassActivity;
 import com.example.tdtuapp.firestore.firestoreAPI;
 import com.example.tdtuapp.LocalMemory.ConstantData;
 import com.example.tdtuapp.LocalMemory.LocalMemory;
@@ -40,6 +42,7 @@ import java.util.Map;
 public class LoginFragment extends Fragment {
     EditText etEmailLogin, etPasswordLogin;
     Button btLogin;
+    TextView tvChangePass;
     Context context;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl(ConstantData.realTimeDatabaseUrl);
 
@@ -59,6 +62,7 @@ public class LoginFragment extends Fragment {
         etEmailLogin = view.findViewById(R.id.etEmailLogin);
         etPasswordLogin = view.findViewById(R.id.etPasswordLogin);
         btLogin = (Button) view.findViewById(R.id.btLogin);
+        tvChangePass = view.findViewById(R.id.tvChangePass);
 
         btLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,7 +92,10 @@ public class LoginFragment extends Fragment {
                                                 String hashPass = document.get("password", String.class);
                                                 if (!ArgonHash.verify(password, hashPass)){
                                                     showToast("Tên đăng nhập hoặc mật khẩu không đúng");
-                                                } else {
+                                                } else if (document.get("isBan", Boolean.class)){
+                                                    showToast("Tài khoản của bạn đã bị chặn");
+                                                }
+                                                else {
                                                     showToast("Đăng nhập thành công");
                                                     LocalMemory.saveLocalUser(context, username);
                                                     LocalMemory.saveLocalName(context, document.get("name", String.class));
@@ -105,6 +112,13 @@ public class LoginFragment extends Fragment {
                                 }
                             });
                 }
+            }
+        });
+
+        tvChangePass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(context, ChangePassActivity.class));
             }
         });
         return view;

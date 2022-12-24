@@ -107,25 +107,25 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         Log.d("chat key", chatKey);
 
         // kiểm tra online
-//        databaseReference.child("USERS").child(otherUser).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                Boolean isOnline = snapshot.child("isOnline").getValue(Boolean.class);
-//                if (isOnline){
-//                    tvStatus.setText("online");
-//                    tvStatus.setTextColor(Color.parseColor("#FF03DAC5"));
-//                } else {
-//                    tvStatus.setText("offline");
-//                    tvStatus.setTextColor(Color.parseColor("#cccccc"));
-//                }
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
+        databaseReference.child("USERS_ONLINE").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild(otherUser)){
+                    Boolean isOnline = snapshot.child(otherUser).getValue(Boolean.class);
+                    if (isOnline){
+                        tvStatus.setText("online");
+                        tvStatus.setTextColor(Color.parseColor("#FF03DAC5"));
+                    } else {
+                        tvStatus.setText("offline");
+                        tvStatus.setTextColor(Color.parseColor("#cccccc"));
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
-
+            }
+        });
 
         // Lưu thời gian khi bấm vào cuộc trò chuyện (tức là thời gian khi xem tin nhắn)
 
@@ -257,6 +257,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                 data.put("sender", localName); // sender trong thông báo
                                 data.put("message", message);
                                 //data.put("receiver", otherUser);
+                                data.put("sender_username", localUser); // !!
                                 data.put("avatar", avatar);
                                 data.put("chatKey", chatKey);
 

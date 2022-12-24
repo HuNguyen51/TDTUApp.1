@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="faculty_arrays">
+        <item>Công Nghệ Thông Tin</item>
+        <item>Điện-Điện Tử</item>
+        <item>Toán-Thống Kê</item>
+        <item>Dược</item>
+        <item>Khoa học xã hội và nhân văn</item>
+        <item>Ngoại Ngữ</item>
+        <item>Khoa học thể thao</item>
+        <item>Bảo hộ lao động</item>
+    </string-array>
+</resources>

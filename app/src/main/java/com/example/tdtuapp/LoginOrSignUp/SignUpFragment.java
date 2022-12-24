@@ -100,12 +100,14 @@ public class SignUpFragment extends Fragment {
                                             user.put("name", username);
                                             user.put("password", ArgonHash.hash(password));
                                             user.put("email", email);
-                                            user.put("avatar", "");
+                                            user.put("avatar", ConstantData.DEFAULT_AVATAR);
                                             user.put("role", "student");
                                             user.put("token", "");
-                                            user.put("faculty", "");
+                                            user.put("faculty", "Chưa thêm");
                                             user.put("isBan", false);
                                             user.put("check", true);
+                                            user.put("student_id", "Chưa thêm");
+                                            user.put("bio", "");
 
                                             firestoreAPI.register(user); // firestore
 

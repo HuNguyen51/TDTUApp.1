@@ -40,22 +40,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
         if (remoteMessage.getData().size() > 0) {
             Map<String, String> map = remoteMessage.getData();
-            String sender = map.get("sender"); // username của local user
+            String oppoUser = map.get("sender"); // username của local user
             String message = map.get("message");
-            //String receiver = map.get("receiver"); // tên của user khác
+            String oppoUsername = map.get("sender_username");  // !!
             String avatar = map.get("avatar");
             String chatKey = map.get("chatKey");
 
-            createNotification(sender, message, avatar, chatKey);
+            createNotification(oppoUser, oppoUsername, message, avatar, chatKey);
         }
     }
-    private void createNotification(String sender, String message, String avatar, String chatKey){
+    private void createNotification(String oppoUser, String oppoUsername, String message, String avatar, String chatKey){
         // tạo id cho chat
         int notifyID = LocalMemory.getNotifyID(this);
         Log.d("notify id", String.valueOf(notifyID));
         //
         Intent intent = new Intent( this , ChatActivity.class );
-        intent.putExtra("name", sender);
+        intent.putExtra("name", oppoUser);
+        intent.putExtra("username", oppoUsername);
         intent.putExtra("avatar", avatar);
         intent.putExtra("chatKey", chatKey);
         intent.putExtra("from", "notification");
@@ -63,7 +64,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Uri notificationSoundURI = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder( this, MyApplication.CHANNEL_ID)
-                .setContentTitle(sender)
+                .setContentTitle(oppoUser)
                 .setContentText(message)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(pendingIntent)

@@ -3,6 +3,7 @@ plugins {
     id 'com.google.gms.google-services'
 }
 
+
 android {
     compileSdk 32
 
@@ -39,20 +40,21 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.2.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
     // firebase
-    implementation 'com.google.firebase:firebase-database:20.1.0'
+    implementation 'com.google.firebase:firebase-database:20.1.0' // realtime
     // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:31.0.2')
-
     // lay du lieu hinh anh
-    implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'com.squareup.picasso:picasso:2.8' // load hình ảnh từ link vào image view
     // webservice
-    implementation 'com.android.volley:volley:1.2.1'
-    implementation 'com.google.firebase:firebase-messaging:23.1.0'
+    implementation 'com.android.volley:volley:1.2.1' // gọi api gửi thông báo đến user khác
+    implementation 'com.google.firebase:firebase-messaging:23.1.0' // cloud messaging gửi thông báo và tạo thông báo
     // circle images
-    implementation 'de.hdodenhof:circleimageview:3.1.0'
-    implementation 'com.google.firebase:firebase-firestore:24.4.1'
+    implementation 'de.hdodenhof:circleimageview:3.1.0' // định dạng hình ảnh tròn
+    implementation 'com.google.firebase:firebase-firestore:24.4.1' // fire store lưu dữ liệu là các file
+
 
     implementation 'org.signal:argon2:13.1@aar'
+    implementation 'com.google.firebase:firebase-storage:20.1.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

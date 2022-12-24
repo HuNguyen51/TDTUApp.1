@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.example.tdtuapp.posts.Posts;
 import com.example.tdtuapp.posts.PostsAdapter;
@@ -29,7 +30,7 @@ public class TrainEvalActivity extends AppCompatActivity{
     private PostsAdapter adapter;
     private ArrayList<Posts> postList;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-
+    private ImageView btnBack;
 
     private String field = "Học thuật";
 
@@ -54,6 +55,14 @@ public class TrainEvalActivity extends AppCompatActivity{
 
         rvTrainEval.setLayoutManager(new LinearLayoutManager(this));
         rvTrainEval.setAdapter(adapter);
+
+        btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         db.collection("Posts")
                 .whereEqualTo("field", field)
