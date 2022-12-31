@@ -1,4 +1,4 @@
-# TDTUApp.1
+# TDTUApp.1: Android
 ## Đề tài cuối kỳ môn phát triển ứng dụng di động về chủ đề hỗ trợ tìm kiếm điểm rèn luyện và nhắn tin realtime với nhau
 công cụ sử dụng:
 - Android studio: java
